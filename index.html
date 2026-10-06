@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THINKBOX — AI Thought Archive</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f7f7f5;color:#171717;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif}
+.app{display:flex;min-height:100vh}.side{width:235px;background:#111;color:#fff;padding:28px 18px;position:fixed;inset:0 auto 0 0}.logo{font-weight:800;font-size:20px;letter-spacing:-.5px;padding:0 12px 32px}.logo span{color:#a8e063}.nav{display:grid;gap:5px}.nav button{border:0;background:transparent;color:#aaa;text-align:left;padding:12px;border-radius:9px;font-size:14px;cursor:pointer}.nav button.active,.nav button:hover{background:#252525;color:#fff}.new{margin-top:24px;background:#a8e063!important;color:#111!important;font-weight:700!important;text-align:center!important}.main{margin-left:235px;width:calc(100% - 235px);padding:42px 54px;max-width:1300px}.top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:28px}.eyebrow{font-size:12px;color:#888;font-weight:700;letter-spacing:1px}.title{font-size:34px;font-weight:800;letter-spacing:-1.5px;margin:7px 0}.desc{color:#777;font-size:14px}.search{border:1px solid #ddd;background:white;border-radius:12px;padding:12px 15px;width:250px;outline:none}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:26px}.stat{background:#fff;border:1px solid #e7e7e3;border-radius:14px;padding:18px}.stat b{font-size:25px;display:block;margin-bottom:4px}.stat small{color:#888}.grid{display:grid;grid-template-columns:1.15fr .85fr;gap:18px}.panel{background:#fff;border:1px solid #e7e7e3;border-radius:16px;padding:22px}.panel h2{font-size:17px;margin:0 0 17px}.idea{border:1px solid #ecece8;border-radius:12px;padding:15px;margin:9px 0;cursor:pointer;transition:.15s}.idea:hover{border-color:#aaa;transform:translateY(-1px)}.idea-top{display:flex;justify-content:space-between;gap:10px}.idea-title{font-weight:700;font-size:14px}.idea p{font-size:13px;color:#666;line-height:1.5;margin:8px 0}.meta{font-size:11px;color:#999}.pill{display:inline-block;border-radius:99px;padding:5px 9px;font-size:11px;background:#f0f0ed;color:#555}.ai{background:#111;color:#fff;border-radius:10px;padding:4px 8px;font-size:10px}.cats{display:grid;grid-template-columns:1fr 1fr;gap:9px}.cat{border:1px solid #e8e8e3;border-radius:12px;padding:14px;cursor:pointer}.cat:hover{background:#fafafa}.cat b{font-size:13px}.cat span{display:block;color:#999;font-size:11px;margin-top:5px}.composer{margin-top:18px;background:#171717;border-radius:16px;padding:20px;color:#fff}.composer textarea{width:100%;height:105px;background:#252525;color:#fff;border:0;border-radius:10px;padding:13px;resize:none;outline:none;font-size:14px}.composer-row{display:flex;justify-content:space-between;align-items:center;margin-top:11px}.hint{font-size:11px;color:#888}.add{border:0;border-radius:9px;background:#a8e063;padding:10px 15px;font-weight:800;cursor:pointer}.empty{padding:25px;text-align:center;color:#aaa;font-size:13px}
+.modal{display:none;position:fixed;inset:0;background:#0008;align-items:center;justify-content:center}.modal.on{display:flex}.modal-box{background:#fff;width:min(560px,90vw);border-radius:18px;padding:25px}.close{float:right;border:0;background:none;font-size:22px;cursor:pointer}.modal-box h2{margin:0 0 8px}.modal-box p{line-height:1.7;color:#555;font-size:14px}.ai-result{background:#f4f4f0;border-radius:10px;padding:14px;margin-top:15px}.ai-result strong{display:block;margin-bottom:6px}
+@media(max-width:850px){.side{width:70px}.logo{font-size:0}.logo:after{content:"T";font-size:20px}.nav button{font-size:0;text-align:center}.nav button:before{content:"•";font-size:18px}.main{margin-left:70px;width:calc(100% - 70px);padding:28px 20px}.stats{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.search{width:180px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="side">
+  <div class="logo">THINK<span>BOX</span></div>
+  <div class="nav">
+    <button class="active" onclick="showAll()">⌂ &nbsp; 모든 생각</button>
+    <button onclick="filterCat('광고·마케팅')">✦ &nbsp; 광고 · 마케팅</button>
+    <button onclick="filterCat('콘텐츠')">▣ &nbsp; 콘텐츠</button>
+    <button onclick="filterCat('커리어')">↗ &nbsp; 커리어</button>
+    <button onclick="filterCat('일상')">○ &nbsp; 일상</button>
+    <button onclick="filterCat('아이디어')">✎ &nbsp; 아이디어</button>
+    <button class="new" onclick="focusComposer()">+ 새 생각</button>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="top">
+    <div><div class="eyebrow">YOUR SECOND BRAIN</div><div class="title" id="pageTitle">모든 생각</div><div class="desc">생각은 던지고, 정리는 AI에게.</div></div>
+    <input class="search" id="search" placeholder="⌕  생각 검색..." oninput="render()">
+  </div>
+
+  <div class="stats">
+    <div class="stat"><b id="total">12</b><small>전체 생각</small></div>
+    <div class="stat"><b id="cats">5</b><small>AI 카테고리</small></div>
+    <div class="stat"><b>7</b><small>이번 달 추가</small></div>
+    <div class="stat"><b>92%</b><small>AI 분류 확신도</small></div>
+  </div>
+
+  <div class="grid">
+    <section class="panel">
+      <h2>최근 생각</h2>
+      <div id="ideas"></div>
+    </section>
+    <section>
+      <div class="panel">
+        <h2>AI가 정리한 카테고리</h2>
+        <div class="cats" id="categories"></div>
+      </div>
+      <div class="composer" id="composer">
+        <div style="font-weight:800;margin-bottom:10px">새로운 생각을 던져보세요.</div>
+        <textarea id="input" placeholder="예: 사람들이 광고를 '광고'라고 인식하지 않게 만드는 방법은 뭘까?"></textarea>
+        <div class="composer-row"><span class="hint">입력하면 AI가 제목 · 카테고리 · 태그를 자동으로 정리합니다.</span><button class="add" onclick="addIdea()">AI로 정리하기 →</button></div>
+      </div>
+    </section>
+  </div>
+</main>
+</div>
+
+<div class="modal" id="modal" onclick="if(event.target===this)this.classList.remove('on')">
+ <div class="modal-box"><button class="close" onclick="document.getElementById('modal').classList.remove('on')">×</button>
+ <div class="eyebrow">AI ORGANIZED</div><h2 id="mTitle"></h2><p id="mText"></p><div class="ai-result" id="mAI"></div></div>
+</div>
+
+<script>
+let data=[];
+
+const catInfo={ "광고·마케팅":"브랜드 / 캠페인 / PR","콘텐츠":"콘텐츠 제작 / SNS","커리어":"취업 / 포트폴리오","일상":"관찰 / 경험","아이디어":"새로운 발상 / 프로젝트" };
+function render(){
+ const q=document.getElementById("search").value.toLowerCase();
+ const list=data.filter(x=>(x.t+x.d+x.tag+x.c).toLowerCase().includes(q));
+ document.getElementById("total").textContent=data.length;
+ document.getElementById("ideas").innerHTML=list.length?list.map((x,i)=>`<div class="idea" onclick="openIdea(${data.indexOf(x)})"><div class="idea-top"><span class="idea-title">${x.t}</span><span class="ai">AI ${x.c}</span></div><p>${x.d}</p><span class="meta">${x.tag} · 방금 전</span></div>`).join(""):'<div class="empty">검색 결과가 없어요.</div>';
+ let counts={};data.forEach(x=>counts[x.c]=(counts[x.c]||0)+1);
+ document.getElementById("categories").innerHTML=Object.keys(catInfo).map(c=>`<div class="cat" onclick="filterCat('${c}')"><b>${c}</b><span>${counts[c]||0}개의 생각 · ${catInfo[c]}</span></div>`).join("");
+}
+function filterCat(c){document.getElementById("search").value="";document.getElementById("pageTitle").textContent=c;document.getElementById("ideas").innerHTML=data.filter(x=>x.c===c).map((x,i)=>`<div class="idea" onclick="openIdea(${data.indexOf(x)})"><div class="idea-top"><span class="idea-title">${x.t}</span><span class="ai">AI ${x.c}</span></div><p>${x.d}</p><span class="meta">${x.tag}</span></div>`).join("")}
+function showAll(){document.getElementById("pageTitle").textContent="모든 생각";render()}
+function focusComposer(){document.getElementById("input").focus();document.getElementById("composer").scrollIntoView({behavior:"smooth"})}
+function classify(text){let c="아이디어",tags=["#새생각"];if(/광고|브랜드|캠페인|마케팅|PR/i.test(text)){c="광고·마케팅";tags=["#광고","#브랜딩"]}else if(/콘텐츠|인스타|릴스|유튜브|SNS/i.test(text)){c="콘텐츠";tags=["#콘텐츠","#SNS"]}else if(/취업|포트폴리오|회사|커리어/i.test(text)){c="커리어";tags=["#커리어","#성장"]}else if(/여행|일본|카페|오늘|먹|경험/i.test(text)){c="일상";tags=["#일상","#관찰"]}return [c,tags]}
+function addIdea(){let el=document.getElementById("input"),text=el.value.trim();if(!text)return;let [c,tags]=classify(text);let title=text.length>32?text.slice(0,32)+"…":text;data.unshift({t:title,d:text,c,tag:tags.join(" ")});el.value="";showAll();openIdea(0)}
+function openIdea(i){let x=data[i];document.getElementById("mTitle").textContent=x.t;document.getElementById("mText").textContent=x.d;document.getElementById("mAI").innerHTML=`<strong>✦ AI 자동 정리</strong>카테고리: ${x.c}<br>추천 태그: ${x.tag}<br><span style="color:#999;font-size:12px">이 프로토타입에서는 키워드 기반으로 분류합니다. 실제 서비스에서는 LLM API로 의미 기반 분류가 가능합니다.</span>`;document.getElementById("modal").classList.add("on")}
+render();
+</script>
+</body></html>
